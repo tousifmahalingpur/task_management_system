@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-md-6">
+
+        <div class="card shadow-lg p-5 mt-5">
+
+            <h2 class="text-center mb-4">
+                Create Your Account
+            </h2>
+
+            <form method="POST">
+
+                <!-- USERNAME -->
+
+                <input
+                    type="text"
+                    name="username"
+                    class="form-control mb-3"
+                    placeholder="Username"
+                    required
+                >
+
+                <!-- EMAIL -->
+
+                <input
+                    type="email"
+                    name="email"
+                    class="form-control mb-3"
+                    placeholder="Email"
+                    required
+                >
+
+                <!-- PASSWORD -->
+
+                <input
+                    type="password"
+                    name="password"
+                    class="form-control mb-3"
+                    placeholder="Password"
+                    required
+                >
+
+                <!-- CONFIRM PASSWORD -->
+
+                <input
+                    type="password"
+                    name="confirm_password"
+                    class="form-control mb-4"
+                    placeholder="Confirm Password"
+                    required
+                >
+
+                <!-- SUBMIT -->
+
+                <button
+                    type="submit"
+                    class="btn btn-primary w-100"
+                >
+                    Signup
+                </button>
+
+            </form>
+
+            <div class="text-center mt-3">
+
+                Already have an account?
+
+                <a href="/login">
+                    Login
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

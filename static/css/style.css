@@ -1,0 +1,22 @@
+body {
+    background: #f4f7fc;
+    font-family: Arial, sans-serif;
+}
+
+.hero-section {
+    padding: 100px 20px;
+}
+
+.card {
+    border: none;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+.btn {
+    border-radius: 10px;
+}

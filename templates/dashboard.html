@@ -1,0 +1,378 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/dashboard.css') }}"
+>
+
+<div class="container-fluid mt-4">
+
+    <!-- ===================== -->
+    <!-- TOP HEADER -->
+    <!-- ===================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+
+        <!-- LEFT -->
+
+        <div>
+
+            <h1 class="dashboard-title">
+                Welcome Back 👋
+            </h1>
+
+            <p class="text-muted">
+                Manage your tasks efficiently
+            </p>
+
+        </div>
+
+        <!-- RIGHT BUTTONS -->
+
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+
+            <!-- DARK MODE -->
+
+            <button
+                id="darkModeToggle"
+                onclick="toggleDarkMode()"
+                class="btn btn-dark"
+            >
+                🌙 Dark Mode
+            </button>
+
+            <!-- LOGOUT -->
+
+            <a
+                href="/logout"
+                class="btn btn-danger"
+                onclick="return confirm('Logout from account?')"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- ===================== -->
+    <!-- STATS CARDS -->
+    <!-- ===================== -->
+
+    <div class="row mb-4">
+
+        <!-- COMPLETED -->
+
+        <div class="col-lg-4 col-md-6 mb-3">
+
+            <div class="stats-card completed-card">
+
+                <h3>Completed Tasks</h3>
+
+                <h1>{{ completed }}</h1>
+
+            </div>
+
+        </div>
+
+        <!-- PENDING -->
+
+        <div class="col-lg-4 col-md-6 mb-3">
+
+            <div class="stats-card pending-card">
+
+                <h3>Pending Tasks</h3>
+
+                <h1>{{ pending }}</h1>
+
+            </div>
+
+        </div>
+
+        <!-- IN PROGRESS -->
+
+        <div class="col-lg-4 col-md-12 mb-3">
+
+            <div class="stats-card progress-card">
+
+                <h3>Tasks In Progress</h3>
+
+                <h1>{{ progress }}</h1>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ===================== -->
+    <!-- PROGRESS TRACKER -->
+    <!-- ===================== -->
+
+    <div class="progress-container mb-5">
+
+        <div class="d-flex justify-content-between mb-2">
+
+            <h5 class="fw-bold">
+                Overall Task Progress
+            </h5>
+
+            <span class="fw-bold text-success">
+
+                {{ completed }}/{{ total_tasks }}
+                Tasks Completed
+
+            </span>
+
+        </div>
+
+        {% if total_tasks > 0 %}
+
+            {% set percentage = (
+                completed / total_tasks * 100
+            ) | round(0) %}
+
+        {% else %}
+
+            {% set percentage = 0 %}
+
+        {% endif %}
+
+        <div
+            class="progress shadow-sm"
+            style="
+                height: 25px;
+                border-radius: 50px;
+                background: #e5e7eb;
+            "
+        >
+
+            <div
+                class="
+                    progress-bar
+                    progress-bar-striped
+                    progress-bar-animated
+                    bg-success
+                "
+
+                role="progressbar"
+
+                style="
+                    width: {{ percentage }}%;
+                    border-radius: 50px;
+                    font-weight: bold;
+                    font-size: 14px;
+                "
+            >
+
+                {{ percentage }}%
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ===================== -->
+    <!-- ACTION BAR -->
+    <!-- ===================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+
+        <!-- CREATE BUTTON -->
+
+        <a
+            href="/create"
+            class="create-btn text-decoration-none"
+        >
+            + Create Task
+        </a>
+
+        <!-- SEARCH -->
+
+        <form
+            method="GET"
+            action="/dashboard"
+            class="mt-3 mt-md-0"
+        >
+
+            <input
+                type="text"
+                name="search"
+                class="form-control search-box"
+                placeholder="Search tasks..."
+                value="{{ request.args.get('search', '') }}"
+            >
+
+        </form>
+
+    </div>
+
+    <!-- ===================== -->
+    <!-- TASK TABLE -->
+    <!-- ===================== -->
+
+    <div class="task-table">
+
+        <table class="table table-hover align-middle mb-0">
+
+            <thead>
+
+                <tr>
+
+                    <th>Title</th>
+
+                    <th>Description</th>
+
+                    <th>Status</th>
+
+                    <th>Created Date</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% if tasks %}
+
+                    {% for task in tasks %}
+
+                    <tr>
+
+                        <!-- TITLE -->
+
+                        <td>
+
+                            <strong>
+                                {{ task.title }}
+                            </strong>
+
+                        </td>
+
+                        <!-- DESCRIPTION -->
+
+                        <td>
+
+                            {{ task.description }}
+
+                        </td>
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if task.status == "Pending" %}
+
+                                <span class="status-badge status-pending">
+                                    Pending
+                                </span>
+
+                            {% elif task.status == "In Progress" %}
+
+                                <span class="status-badge status-progress">
+                                    In Progress
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge status-completed">
+                                    Completed
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <!-- DATE -->
+
+                        <td>
+
+                            {{ task.created_at.strftime('%d %b %Y') }}
+
+                        </td>
+
+                        <!-- ACTIONS -->
+
+                        <td>
+
+                            <!-- EDIT -->
+
+                            <a
+                                href="/edit/{{ task.id }}"
+                                class="btn edit-btn btn-sm"
+                            >
+                                Edit
+                            </a>
+
+                            <!-- DELETE -->
+
+                            <form
+                                action="/delete/{{ task.id }}"
+                                method="POST"
+                                style="display:inline;"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="btn delete-btn btn-sm"
+                                    onclick="return confirm('Delete this task?')"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <!-- EMPTY STATE -->
+
+                    <tr>
+
+                        <td colspan="5">
+
+                            <div class="empty-task">
+
+                                <h3>
+                                    No Tasks Found
+                                </h3>
+
+                                <p>
+                                    Start by creating your first task.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- ===================== -->
+<!-- DARK MODE SCRIPT -->
+<!-- ===================== -->
+
+<script
+    src="{{ url_for('static', filename='js/darkmode.js') }}"
+></script>
+
+{% endblock %}
